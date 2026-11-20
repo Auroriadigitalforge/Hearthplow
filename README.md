@@ -4,7 +4,7 @@ A 3D winter snow-plowing game set across golden-twilight alpine neighborhoods an
 
 ---
 # Try our Game
-https://heartplow.ai.studio/
+[Hearthplow](https://auroria-digital-forge.itch.io/hearthplow)
 
 ## Features
 
