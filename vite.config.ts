@@ -6,6 +6,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Relative base so the bundle works when itch.io serves it from a subpath in an iframe.
+    base: './',
     plugins: [
       react(),
       tailwindcss(),
