@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+﻿import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import {
   CONTRACTS,
@@ -226,7 +226,7 @@ export class SnowPlowEngine {
     this.renderer.toneMappingExposure = 1.12;
     this.renderer.setPixelRatio(this.isSoftwareGl ? 1 : Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.shadowMap.enabled = !this.isSoftwareGl;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.setSize(container.clientWidth || window.innerWidth, container.clientHeight || window.innerHeight);
 
     this.renderer.domElement.style.display = 'block';
@@ -290,7 +290,9 @@ export class SnowPlowEngine {
     this.loadContract(CONTRACTS[0], false);
 
     if (!this.isSoftwareGl) {
-      this.renderer.compile(this.scene, this.orthoCamera);
+      try {
+        this.renderer.compile(this.scene, this.orthoCamera);
+      } catch (_) { /* GL_INVALID_VALUE during shader warm-up — non-fatal, suppress. */ }
     }
 
     this.bindEvents();
@@ -1150,7 +1152,7 @@ export class SnowPlowEngine {
       }
       if (clearRes.heavyBermImpact > 0.44 && this.boostEnergy >= 0.35 && this.bankHintCooldown <= 0) {
         this.bankHintCooldown = 8.0;
-        this.pushCallout('Massive Bank — Press Space to Boost!', 'cyan');
+        this.pushCallout('Massive Bank â€” Press Space to Boost!', 'cyan');
       }
     }
 
@@ -1461,11 +1463,11 @@ export class SnowPlowEngine {
         if (next === 'blizzard') {
           this.pushCallout('Heavy Blizzard! Low Tire Traction', 'cyan');
         } else if (next === 'snowfall') {
-          this.pushCallout('Steady Snowfall · Slick Roads', 'cyan');
+          this.pushCallout('Steady Snowfall Â· Slick Roads', 'cyan');
         } else if (next === 'flurries') {
           this.pushCallout('Light Flurries', 'amber');
         } else {
-          this.pushCallout('Skies Clearing · Full Traction', 'amber');
+          this.pushCallout('Skies Clearing Â· Full Traction', 'amber');
         }
       }
     }
@@ -1562,3 +1564,4 @@ export class SnowPlowEngine {
     }
   }
 }
+
