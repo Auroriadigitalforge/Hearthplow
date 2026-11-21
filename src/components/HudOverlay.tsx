@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
+import { VirtualJoystick } from './VirtualJoystick';
 import { Volume2, VolumeX, Pause, Wrench, CheckCircle2, Zap, Compass, Video, Siren, Store, Users, CloudSnow, Snowflake, Wind, Moon } from 'lucide-react';
 import { CameraMode, CONTRACTS, LiveRunStats, SteeringMode } from '../game/types';
 
@@ -72,26 +73,28 @@ export const HudOverlay: React.FC<HudOverlayProps> = ({
   const targetLeftPct = Math.min(98, stats.targetPercent);
 
   return (
-    <div className="fixed inset-0 z-10 pointer-events-none flex flex-col justify-between p-4 md:p-5">
-      {/* Top Perimeter Status Row */}
-      <div className="flex items-start justify-between gap-4">
-        {/* Top-Left: Route Clear Progress */}
-        <div className="bg-[#0f1622]/88 border border-white/12 rounded-xl px-4 py-3 min-w-[240px] max-w-[330px]">
-          <div className="flex items-baseline justify-between gap-3 mb-1.5">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-display font-bold text-sm text-white truncate">{contract.name}</span>
+    <div className="fixed inset-0 z-10 pointer-events-none flex flex-col justify-between p-2 sm:p-4 md:p-5">
+
+      {/* ── TOP ROW ── */}
+      <div className="flex items-start justify-between gap-1.5 sm:gap-3">
+
+        {/* Top-Left: Progress card — fluid width, no fixed min-w */}
+        <div className="bg-[#0f1622]/88 border border-white/12 rounded-xl px-2.5 py-2 sm:px-4 sm:py-3 w-[48vw] max-w-[320px] min-w-0 shrink-0">
+          <div className="flex items-baseline justify-between gap-1 mb-1.5">
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="font-display font-bold text-[11px] sm:text-sm text-white truncate leading-tight">{contract.name}</span>
               {stats.difficulty === 'hard' && (
-                <span className="px-1.5 py-0.5 rounded bg-red-500/20 border border-red-400/40 text-[10px] font-bold text-red-300 shrink-0">
+                <span className="hidden sm:inline px-1 py-0.5 rounded bg-red-500/20 border border-red-400/40 text-[9px] font-bold text-red-300 shrink-0">
                   HARD
                 </span>
               )}
             </div>
-            <span className="font-mono-num text-sm font-bold text-sky-400 shrink-0">
+            <span className="font-mono-num text-xs sm:text-sm font-bold text-sky-400 shrink-0">
               {stats.clearPercent.toFixed(1)}%
             </span>
           </div>
 
-          <div className="relative h-2 bg-slate-800 rounded-full overflow-hidden mb-2">
+          <div className="relative h-1.5 sm:h-2 bg-slate-800 rounded-full overflow-hidden mb-1.5">
             <div
               className={`h-full transition-[width] duration-150 ${
                 stats.contractReadyToFinish ? 'bg-amber-400' : 'bg-sky-400'
@@ -105,15 +108,16 @@ export const HudOverlay: React.FC<HudOverlayProps> = ({
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs text-slate-300 font-mono-num">
-            <span>
-              Priority {stats.priorityCleared}/{stats.priorityTotal}
-              {stats.clearPercent >= 85 ? ' · Patches Lit' : ''}
+          {/* Clock + priority — hide on very small portrait to save space */}
+          <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-300 font-mono-num">
+            <span className="truncate">
+              {stats.priorityCleared}/{stats.priorityTotal} prio
             </span>
-            <span className="text-slate-400">{formatClock(stats.elapsedSeconds)}</span>
+            <span className="text-slate-400 ml-1 shrink-0">{formatClock(stats.elapsedSeconds)}</span>
           </div>
 
-          <div className="flex items-center justify-between gap-2 border-t border-white/10 pt-2 mt-2 text-xs">
+          {/* Weather + grip — hide on tiny screens, show from sm */}
+          <div className="hidden sm:flex items-center justify-between gap-2 border-t border-white/10 pt-2 mt-2 text-xs">
             <div className="flex items-center gap-1.5 min-w-0">
               {stats.weatherIntensity === 'blizzard' ? (
                 <Wind className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
@@ -124,248 +128,193 @@ export const HudOverlay: React.FC<HudOverlayProps> = ({
               ) : (
                 <Moon className="w-3.5 h-3.5 text-amber-300 shrink-0" />
               )}
-              <span
-                className={`font-medium truncate ${
-                  stats.weatherIntensity === 'blizzard'
-                    ? 'text-cyan-200'
-                    : stats.weatherIntensity === 'snowfall'
-                    ? 'text-sky-200'
-                    : stats.weatherIntensity === 'flurries'
-                    ? 'text-slate-200'
-                    : 'text-amber-200'
-                }`}
-              >
-                {stats.weatherLabel}
-              </span>
+              <span className={`font-medium truncate ${
+                stats.weatherIntensity === 'blizzard' ? 'text-cyan-200'
+                : stats.weatherIntensity === 'snowfall' ? 'text-sky-200'
+                : stats.weatherIntensity === 'flurries' ? 'text-slate-200'
+                : 'text-amber-200'
+              }`}>{stats.weatherLabel}</span>
             </div>
-            <span
-              className={`font-mono-num font-bold shrink-0 ${
-                stats.roadGripPercent >= 75
-                  ? 'text-emerald-400'
-                  : stats.roadGripPercent >= 60
-                  ? 'text-amber-300'
-                  : 'text-red-400'
-              }`}
-            >
+            <span className={`font-mono-num font-bold shrink-0 ${
+              stats.roadGripPercent >= 75 ? 'text-emerald-400'
+              : stats.roadGripPercent >= 60 ? 'text-amber-300'
+              : 'text-red-400'
+            }`}>
               Grip {stats.roadGripPercent}%
             </span>
           </div>
         </div>
 
-        {/* Top-Center: Police Dispatch Alert or Dynamic Callout Toast */}
-        <div className="hidden sm:flex flex-col items-center gap-1.5 pt-1">
+        {/* Top-Center: callout toasts — hidden on xs, visible from sm */}
+        <div className="hidden sm:flex flex-col items-center gap-1.5 pt-1 flex-1 min-w-0">
           {stats.policeChaseActive && (
-            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-lg border bg-[#161e2e]/95 border-red-500/75 text-red-200 font-display font-bold text-xs shadow-lg">
-              <Siren className="w-4 h-4 text-red-400 shrink-0" />
-              <span>Police Dispatched</span>
-              <span aria-hidden="true" className="text-slate-500">·</span>
-              <span className="font-mono-num text-amber-300">
-                {stats.npcHitsCount} {stats.npcHitsCount === 1 ? 'Hit' : 'Hits'} (-{stats.pendingFine})
-              </span>
-              <span aria-hidden="true" className="text-slate-500">·</span>
+            <div className="flex items-center gap-1.5 sm:gap-2.5 px-2 sm:px-4 py-1.5 rounded-lg border bg-[#161e2e]/95 border-red-500/75 text-red-200 font-display font-bold text-xs shadow-lg">
+              <Siren className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400 shrink-0" />
+              <span>Police!</span>
+              <span className="font-mono-num text-amber-300">-{stats.pendingFine}</span>
               <span className="font-mono-num text-sky-300">{stats.policeChaseRemaining.toFixed(1)}s</span>
             </div>
           )}
           {visibleCallout && (
-            <div
-              className={`px-4 py-1.5 rounded-lg border font-display font-bold text-sm shadow-lg transition-opacity duration-200 ${
-                visibleCallout.accent === 'amber'
-                  ? 'bg-[#161e2e]/95 border-amber-400/60 text-amber-300'
-                  : 'bg-[#161e2e]/95 border-sky-400/60 text-sky-300'
-              }`}
-            >
+            <div className={`px-3 py-1.5 rounded-lg border font-display font-bold text-xs sm:text-sm shadow-lg transition-opacity duration-200 ${
+              visibleCallout.accent === 'amber'
+                ? 'bg-[#161e2e]/95 border-amber-400/60 text-amber-300'
+                : 'bg-[#161e2e]/95 border-sky-400/60 text-sky-300'
+            }`}>
               {visibleCallout.text}
             </div>
           )}
         </div>
 
-        {/* Top-Right: Coins, Combo Multiplier & Utility Actions */}
-        <div className="flex items-start gap-2.5">
-          {/* Combo Multiplier Readout */}
-          <div className="bg-[#0f1622]/88 border border-white/12 rounded-xl px-3.5 py-2.5 min-w-[110px]">
-            <div className="flex items-baseline justify-between gap-2">
-              <span className="text-xs text-slate-400">Combo</span>
-              <span
-                className={`font-mono-num font-bold text-base ${
-                  stats.comboMultiplier >= 4
-                    ? 'text-amber-400'
-                    : stats.comboMultiplier >= 2
-                    ? 'text-sky-400'
-                    : 'text-slate-200'
-                }`}
-              >
-                {stats.comboMultiplier}x
-              </span>
+        {/* Top-Right: compact icon-only buttons on mobile, labelled on sm+ */}
+        <div className="flex items-start gap-1 sm:gap-2">
+          {/* Combo + Coins — combined into one tiny pill on xs */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Combo: icon-only on xs */}
+            <div className="bg-[#0f1622]/88 border border-white/12 rounded-lg px-2 py-1.5 sm:px-3.5 sm:py-2.5 sm:min-w-[90px]">
+              <div className="flex items-center sm:items-baseline justify-between gap-1">
+                <span className="hidden sm:inline text-xs text-slate-400">Combo</span>
+                <span className={`font-mono-num font-bold text-xs sm:text-base ${
+                  stats.comboMultiplier >= 4 ? 'text-amber-400'
+                  : stats.comboMultiplier >= 2 ? 'text-sky-400'
+                  : 'text-slate-200'
+                }`}>{stats.comboMultiplier}x</span>
+              </div>
+              <div className="hidden sm:block h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1.5">
+                <div className="h-full bg-amber-400 transition-[width] duration-100"
+                  style={{ width: `${Math.round(stats.comboTimerRatio * 100)}%` }} />
+              </div>
             </div>
-            <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1.5">
-              <div
-                className="h-full bg-amber-400 transition-[width] duration-100"
-                style={{ width: `${Math.round(stats.comboTimerRatio * 100)}%` }}
-              />
+
+            {/* Coins */}
+            <div className="bg-[#0f1622]/88 border border-white/12 rounded-lg px-2 py-1.5 sm:px-3.5 sm:py-2.5">
+              <div className="hidden sm:block text-xs text-slate-400">Coins</div>
+              <div className="font-mono-num font-bold text-xs sm:text-base text-amber-400">
+                {savedCoins + stats.coinsEarnedThisRun}
+              </div>
             </div>
           </div>
 
-          {/* Coins Balance */}
-          <div className="bg-[#0f1622]/88 border border-white/12 rounded-xl px-3.5 py-2.5">
-            <div className="text-xs text-slate-400">Coins</div>
-            <div className="font-mono-num font-bold text-base text-amber-400">
-              {savedCoins + stats.coinsEarnedThisRun}
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-1.5 pointer-events-auto">
-            <button
-              type="button"
-              onClick={onCycleCameraMode}
-              title="Switch camera angle (C)"
-              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
+          {/* Action icon buttons */}
+          <div className="flex items-center gap-1 pointer-events-auto">
+            {/* Camera — icon only on xs */}
+            <button type="button" onClick={onCycleCameraMode} title="Switch camera (C)"
+              className="p-2 sm:flex sm:items-center sm:gap-1.5 sm:px-3 sm:py-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 text-xs font-medium transition-colors cursor-pointer">
               <Video className="w-3.5 h-3.5 text-amber-400" />
-              <span>
-                {cameraMode === 'cab' ? 'Cab' : cameraMode === 'chase' ? 'Chase' : 'Isometric'}
+              <span className="hidden sm:inline">
+                {cameraMode === 'cab' ? 'Cab' : cameraMode === 'chase' ? 'Chase' : 'Iso'}
               </span>
             </button>
+
+            {/* Steering mode — only on sm+ */}
             {cameraMode === 'isometric' && (
-              <button
-                type="button"
-                onClick={onToggleSteeringMode}
+              <button type="button" onClick={onToggleSteeringMode}
                 title={`Steering: ${steeringMode === 'camera' ? 'Camera-Relative' : 'Truck-Relative'}`}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-              >
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 text-xs font-medium transition-colors cursor-pointer">
                 <Compass className="w-3.5 h-3.5 text-sky-400" />
-                <span>{steeringMode === 'camera' ? 'Camera' : 'Truck'}</span>
+                <span>{steeringMode === 'camera' ? 'Cam' : 'Truck'}</span>
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => onOpenShop(stats.nearbyShop?.id)}
-              title="Open City Shops & Crowd"
-              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-emerald-400/35 text-emerald-300 text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
+
+            {/* Shop icon */}
+            <button type="button" onClick={() => onOpenShop(stats.nearbyShop?.id)} title="Shops"
+              className="p-2 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-emerald-400/35 text-emerald-300 transition-colors cursor-pointer">
               <Store className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Shops ({stats.allShops.length})</span>
             </button>
-            <button
-              type="button"
-              onClick={onOpenGarage}
-              title="Open Garage"
-              className="p-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 transition-colors cursor-pointer"
-            >
-              <Wrench className="w-4 h-4 text-amber-400" />
+
+            {/* Garage icon */}
+            <button type="button" onClick={onOpenGarage} title="Garage"
+              className="p-2 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 transition-colors cursor-pointer">
+              <Wrench className="w-3.5 h-3.5 text-amber-400" />
             </button>
-            <button
-              type="button"
-              onClick={onToggleMute}
-              title={muted ? 'Unmute audio' : 'Mute audio'}
-              className="p-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 transition-colors cursor-pointer"
-            >
-              {muted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
+
+            {/* Mute */}
+            <button type="button" onClick={onToggleMute} title={muted ? 'Unmute' : 'Mute'}
+              className="p-2 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 transition-colors cursor-pointer">
+              {muted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" /> : <Volume2 className="w-3.5 h-3.5 text-amber-400" />}
             </button>
-            <button
-              type="button"
-              onClick={onOpenPause}
-              title="Pause (Esc)"
-              className="p-2.5 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 transition-colors cursor-pointer"
-            >
-              <Pause className="w-4 h-4" />
+
+            {/* Pause */}
+            <button type="button" onClick={onOpenPause} title="Pause (Esc)"
+              className="p-2 rounded-xl bg-[#0f1622]/88 hover:bg-[#1a2436] border border-white/12 text-slate-200 transition-colors cursor-pointer">
+              <Pause className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Bottom Perimeter Row: Boost Gauge & Finish Shift CTA */}
-      <div className="flex items-end justify-between gap-4">
-        {/* Mobile Touch Controls (shown only on touch devices) */}
+      {/* Police alert on xs (top-center was hidden) */}
+      {stats.policeChaseActive && (
+        <div className="sm:hidden flex justify-center mt-1 pointer-events-none">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-lg border bg-[#161e2e]/95 border-red-500/75 text-red-200 font-display font-bold text-xs shadow-lg">
+            <Siren className="w-3 h-3 text-red-400" />
+            <span>Police! -{stats.pendingFine} · {stats.policeChaseRemaining.toFixed(1)}s</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── BOTTOM ROW ── */}
+      <div className="flex items-end justify-between gap-2">
+
+        {/* Left: joystick or keyboard hint */}
         {isTouchDevice ? (
-          <div className="pointer-events-auto grid grid-cols-3 gap-1.5 w-36">
-            <div />
+          <div className="pointer-events-auto flex items-end gap-2">
+            <VirtualJoystick onSteer={onTouchSteer} size={Math.min(120, Math.round(window.innerWidth * 0.28))} />
             <button
               type="button"
-              onTouchStart={() => onTouchSteer(0, 1)}
-              onTouchEnd={() => onTouchSteer(0, 0)}
-              className="h-11 rounded-lg bg-[#0f1622]/85 border border-white/15 text-white font-bold active:bg-amber-500/30"
+              onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); onTouchBoost(); }}
+              className="mb-1 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-sky-500/20 border-2 border-sky-400/50 flex flex-col items-center justify-center text-sky-300 text-[9px] sm:text-[10px] font-bold active:bg-sky-500/40 select-none"
+              style={{ touchAction: 'none' }}
+              aria-label="Boost"
             >
-              W
-            </button>
-            <div />
-            <button
-              type="button"
-              onTouchStart={() => onTouchSteer(-1, 0.7)}
-              onTouchEnd={() => onTouchSteer(0, 0)}
-              className="h-11 rounded-lg bg-[#0f1622]/85 border border-white/15 text-white font-bold active:bg-amber-500/30"
-            >
-              A
-            </button>
-            <button
-              type="button"
-              onTouchStart={() => onTouchSteer(0, -1)}
-              onTouchEnd={() => onTouchSteer(0, 0)}
-              className="h-11 rounded-lg bg-[#0f1622]/85 border border-white/15 text-white font-bold active:bg-amber-500/30"
-            >
-              S
-            </button>
-            <button
-              type="button"
-              onTouchStart={() => onTouchSteer(1, 0.7)}
-              onTouchEnd={() => onTouchSteer(0, 0)}
-              className="h-11 rounded-lg bg-[#0f1622]/85 border border-white/15 text-white font-bold active:bg-amber-500/30"
-            >
-              D
+              <span className="text-base sm:text-lg leading-none">⚡</span>
+              <span>BOOST</span>
             </button>
           </div>
         ) : (
           <div className="text-xs text-slate-300/80 bg-[#0f1622]/80 border border-white/10 px-3 py-1.5 rounded-lg whitespace-nowrap">
-            WASD Drive · Space Boost · E Shop · C Camera · Esc Pause
+            WASD · Space Boost · E Shop · C Cam · Esc Pause
           </div>
         )}
 
-        {/* Center Compact Shop Prompt, Boost & Finish Shift Cluster */}
-        <div className="flex items-center gap-3 mx-auto md:mx-0">
+        {/* Center / right: nearby shop prompt + boost gauge + finish shift */}
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
           {stats.nearbyShop && (
-            <button
-              type="button"
-              onClick={() => onOpenShop(stats.nearbyShop?.id)}
-              className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-display font-bold text-xs shadow-lg shadow-emerald-600/25 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <Store className="w-4 h-4 shrink-0" />
-              <span>Open {stats.nearbyShop.name} (E)</span>
-              <span className="flex items-center gap-1 font-mono-num text-emerald-100 bg-black/25 px-1.5 py-0.5 rounded">
-                <Users className="w-3 h-3" />
+            <button type="button" onClick={() => onOpenShop(stats.nearbyShop?.id)}
+              className="pointer-events-auto flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-display font-bold text-xs shadow-lg shadow-emerald-600/25 transition-colors whitespace-nowrap cursor-pointer">
+              <Store className="w-3.5 h-3.5 shrink-0" />
+              {/* Show full label on sm+, icon-only on xs */}
+              <span className="hidden sm:inline">Open {stats.nearbyShop.name}</span>
+              <span className="sm:hidden">Shop</span>
+              <span className="flex items-center gap-1 font-mono-num text-emerald-100 bg-black/25 px-1 py-0.5 rounded text-[10px]">
+                <Users className="w-2.5 h-2.5" />
                 {stats.nearbyShop.crowdCount}
               </span>
             </button>
           )}
-          <button
-            type="button"
-            onClick={onTouchBoost}
-            className="pointer-events-auto flex items-center gap-2.5 bg-[#0f1622]/90 border border-white/12 rounded-xl px-3.5 py-2 cursor-pointer hover:bg-[#1a2436] transition-colors"
-          >
-            <Zap className={`w-4 h-4 ${stats.boostEnergy >= 0.35 ? 'text-sky-400' : 'text-slate-500'}`} />
-            <div className="w-24">
-              <div className="flex justify-between text-[11px] text-slate-300 mb-1">
+
+          {/* Boost gauge — narrower on mobile */}
+          <button type="button" onClick={onTouchBoost}
+            className="pointer-events-auto flex items-center gap-2 bg-[#0f1622]/90 border border-white/12 rounded-xl px-2.5 sm:px-3.5 py-2 cursor-pointer hover:bg-[#1a2436] transition-colors">
+            <Zap className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${stats.boostEnergy >= 0.35 ? 'text-sky-400' : 'text-slate-500'}`} />
+            <div className="w-14 sm:w-24">
+              <div className="flex justify-between text-[10px] sm:text-[11px] text-slate-300 mb-1">
                 <span>Boost</span>
                 <span className="font-mono-num">{Math.round(stats.boostEnergy * 100)}%</span>
               </div>
               <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-[width] duration-100 ${
-                    stats.isBoosting ? 'bg-amber-400' : 'bg-sky-400'
-                  }`}
-                  style={{ width: `${Math.round(stats.boostEnergy * 100)}%` }}
-                />
+                <div className={`h-full transition-[width] duration-100 ${stats.isBoosting ? 'bg-amber-400' : 'bg-sky-400'}`}
+                  style={{ width: `${Math.round(stats.boostEnergy * 100)}%` }} />
               </div>
             </div>
           </button>
 
           {stats.contractReadyToFinish && (
-            <button
-              type="button"
-              onClick={onFinishShift}
-              className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-bold text-sm shadow-lg shadow-amber-500/25 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Finish Shift (F)</span>
+            <button type="button" onClick={onFinishShift}
+              className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition-colors whitespace-nowrap cursor-pointer">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Finish Shift (F)</span>
+              <span className="sm:hidden">Finish</span>
             </button>
           )}
         </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   X,
   Star,
@@ -35,8 +35,8 @@ interface GarageModalProps {
 
 export const GarageModal: React.FC<GarageModalProps> = ({ saveState, onBuyUpgrade, onClose }) => {
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/65">
-      <div className="w-full max-w-2xl bg-[#0f1622] border border-white/15 rounded-2xl p-6 shadow-2xl">
+    <div className="fixed inset-0 z-30 flex items-center justify-center p-2 sm:p-4 bg-black/65 overflow-y-auto">
+      <div className="w-full max-w-2xl bg-[#0f1622] border border-white/15 rounded-2xl p-3 sm:p-6 shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
         <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div>
             <h2 className="font-display text-xl font-bold text-white">Truck Garage &amp; Upgrades</h2>
@@ -161,8 +161,8 @@ export const PauseModal: React.FC<PauseModalProps> = ({
     cameraMode === 'cab' ? '1st-Person Cab' : cameraMode === 'chase' ? 'Top-Side Chase' : 'Isometric';
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/65">
-      <div className="w-full max-w-sm bg-[#0f1622] border border-white/15 rounded-2xl p-6 shadow-2xl">
+    <div className="fixed inset-0 z-30 flex items-center justify-center p-2 sm:p-4 bg-black/65 overflow-y-auto">
+      <div className="w-full max-w-sm bg-[#0f1622] border border-white/15 rounded-2xl p-3 sm:p-6 shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
         <div className="text-xs text-slate-400 mb-1">Shift Paused</div>
         <h2 className="font-display text-xl font-bold text-white mb-5">{contractName}</h2>
 
@@ -243,8 +243,8 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
   const nextContract = CONTRACTS[summary.contract.index + 1];
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/65">
-      <div className="w-full max-w-md bg-[#0f1622] border border-white/15 rounded-2xl p-6 shadow-2xl">
+    <div className="fixed inset-0 z-30 flex items-center justify-center p-2 sm:p-4 bg-black/65 overflow-y-auto">
+      <div className="w-full max-w-md bg-[#0f1622] border border-white/15 rounded-2xl p-3 sm:p-6 shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-sky-400">Shift Complete</span>
           <div className="flex items-center gap-1">
@@ -357,8 +357,8 @@ interface ArrestModalProps {
 
 export const ArrestModal: React.FC<ArrestModalProps> = ({ summary, onRestartGame }) => {
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/70">
-      <div className="w-full max-w-md bg-[#0f1622] border border-red-500/40 rounded-2xl p-6 shadow-2xl">
+    <div className="fixed inset-0 z-30 flex items-center justify-center p-2 sm:p-4 bg-black/70 overflow-y-auto">
+      <div className="w-full max-w-md bg-[#0f1622] border border-red-500/40 rounded-2xl p-3 sm:p-6 shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
         <div className="flex items-center gap-2.5 mb-2">
           <ShieldAlert className="w-5 h-5 text-red-400 shrink-0" />
           <span className="text-xs font-semibold text-red-400">Police Citation &amp; Arrest</span>
@@ -467,8 +467,8 @@ export const CityShopModal: React.FC<CityShopModalProps> = ({
       : 'Spiced Apple Cider & Espresso Bar';
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/65">
-      <div className="w-full max-w-2xl bg-[#0f1622] border border-emerald-400/35 rounded-2xl p-6 shadow-2xl">
+    <div className="fixed inset-0 z-30 flex items-center justify-center p-2 sm:p-4 bg-black/65 overflow-y-auto">
+      <div className="w-full max-w-2xl bg-[#0f1622] border border-emerald-400/35 rounded-2xl p-3 sm:p-6 shadow-2xl my-auto max-h-[94vh] overflow-y-auto">
         <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -628,3 +628,4 @@ export const CityShopModal: React.FC<CityShopModalProps> = ({
     </div>
   );
 };
+

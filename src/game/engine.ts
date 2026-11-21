@@ -327,6 +327,7 @@ export class SnowPlowEngine {
 
   private bindEvents(): void {
     window.addEventListener('resize', this.handleResize);
+    window.visualViewport?.addEventListener('resize', this.handleResize);
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('blur', this.handleBlur);
@@ -336,6 +337,7 @@ export class SnowPlowEngine {
 
   private unbindEvents(): void {
     window.removeEventListener('resize', this.handleResize);
+    window.visualViewport?.removeEventListener('resize', this.handleResize);
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
     window.removeEventListener('blur', this.handleBlur);
